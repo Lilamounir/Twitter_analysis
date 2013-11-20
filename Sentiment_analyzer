@@ -1,0 +1,21 @@
+import sys
+import json
+
+
+afinnfile = open(sys.argv[1])
+scores = {} # initialize an empty dictionary
+
+for line in afinnfile:
+  term, score  = line.split("\t")  # The file is tab-delimited. "\t" means "tab character"
+  scores[term] = int(score)  # Convert the score to an integer.
+
+for line in open(sys.argv[2]):
+	sentiment = 0
+	textsection = json.loads(line).get('text', "0")
+	if isinstance(textsection, str) == True:
+		print 0
+	else:
+		textsection = textsection.encode('utf-8').lower()
+		for term in scores:
+			sentiment = sentiment + textsection.count(term) * scores[term] 
+		print sentiment
