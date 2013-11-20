@@ -1,0 +1,30 @@
+import sys
+import json
+
+
+afinnfile = open(sys.argv[1])
+scores = {} # initialize an empty dictionary
+
+for line in afinnfile:
+  term, score  = line.split("\t")  # The file is tab-delimited. "\t" means "tab character"
+  scores[term] = int(score)  # Convert the score to an integer.
+
+newterms = {}
+for line in open(sys.argv[2]):
+	sentiment = 0
+	textsection = json.loads(line).get('text', "0")
+	if isinstance(textsection, str) == True:
+		dummy = 0
+	else:
+		textsection2 = textsection.encode('utf-8').lower() #use seed dictionary to define sentiment of tweet
+		for term in scores:
+			sentiment = sentiment + textsection2.count(term) * scores[term]
+		wordlist = textsection.encode('utf-8').split()
+		for words in wordlist: #use tweet sentiment to inform our understanding of each word within tweet
+			if newterms.get(words, "Not Here") == "Not Here":
+				newterms[words] = sentiment
+			else:
+				newterms[words] = newterms[words] + sentiment
+
+for words in newterms:
+	print words + " " + str(newterms[words])
